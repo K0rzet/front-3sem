@@ -1,108 +1,121 @@
-import { Space, Table, Tag } from 'antd';
-import type { ColumnsType } from 'antd/es/table';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { Table, Button, Modal } from 'antd';
+import { MovieService } from '../services/movies.service';
+import { IMovie, IGenre } from '../shared/types/movie.types';
 
-interface DataType {
-  key: string;
-  name: string;
-  year: number;
-  description: string;
-  genres: string[];
-}
+interface MovieTableProps {}
 
-const TestTable: React.FC = () => {
-  const [tableData, setTableData] = useState<DataType[]>([
-    {
-      key: "1",
-      name: "СуперИвановы",
-      year: 2023,
-      description: "СуперИвановы",
-      genres: ["Комедия", "Фантастика"],
-    },
-    {
-      key: "2",
-      name: "Супер-Ивановы",
-      year: 2023,
-      description: "СуперИвановы",
-      genres: ["Комедия", "Фантастика"],
-    },
-    {
-      key: "3",
-      name: "СуперИвановы",
-      year: 2023,
-      description: "СуперИвановы",
-      genres: ["Комедия", "Фантастика"],
-    },
-    {
-      key: "4",
-      name: "СуперИвановы",
-      year: 2023,
-      description: "СуперИвановы",
-      genres: ["Комедия", "Фантастика"],
-    },
-  ]);
+const MovieTable: React.FC<MovieTableProps> = () => {
+  const [movies, setMovies] = useState<IMovie[]>([]);
+  const [totalPages, setTotalPages] = useState<number | undefined>(undefined);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [loading, setLoading] = useState<boolean>(false);
 
-  const columns: ColumnsType<DataType> = [
+  const columns = [
     {
-      title: "Название",
-      dataIndex: "name",
-      key: "name",
-      render: (text: string) => <a>{text}</a>,
+      title: 'Title',
+      dataIndex: 'title',
+      key: 'title',
     },
     {
-      title: "Год",
-      dataIndex: "year",
-      key: "year",
+      title: 'Year',
+      dataIndex: 'year',
+      key: 'year',
     },
     {
-      title: "Описание",
-      dataIndex: "description",
-      key: "description",
+      title: 'Genres',
+      dataIndex: 'genres',
+      key: 'genres',
+      render: (genres: IGenre[]) => genres.map(genre => genre.name).join(', '),
     },
     {
-      title: "Жанры",
-      key: "genres",
-      dataIndex: "genres",
-      render: (_, { genres }) => (
-        <>
-          {genres.map((genre) => {
-            const color = "geekblue";
-            return (
-              <Tag color={color} key={genre}>
-                {genre.toUpperCase()}
-              </Tag>
-            );
-          })}
-        </>
-      ),
-    },
-    {
-      title: "Действие",
-      key: "action",
-      render: (_, record) => (
-        <Space size="middle">
-          <a>Изменить</a>
-          <a onClick={() => handleDelete(record.key)}>Удалить</a>
-        </Space>
+      title: 'Actions',
+      key: 'actions',
+      render: (text: string, record: IMovie) => (
+        <Button onClick={() => handleDeleteMovie(record)} danger>
+          Удалить
+        </Button>
       ),
     },
   ];
 
-  const handleDelete = (key: string) => {
-    // Filter out the item with the specified key
-    const updatedData = tableData.filter((item) => item.key !== key);
-    setTableData(updatedData);
+  useEffect(() => {
+    const fetchMovies = async () => {
+      try {
+        setLoading(true);
+        const response = await MovieService.getAll('', currentPage);
+        if (currentPage > response.data.totalPages) {
+          setCurrentPage(response.data.totalPages);
+        } else {
+          setMovies(response.data.movies);
+          setTotalPages(response.data.totalPages);
+        }
+      } catch (error) {
+        console.error('Error fetching movies:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMovies();
+  }, [currentPage]);
+
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage);
   };
 
-  const paginationConfig = {
-    pageSize: 3,
-    total: tableData.length,
-    showQuickJumper: true,
+  const handleDeleteMovie = async (movie: IMovie) => {
+    Modal.confirm({
+      title: 'Удаление фильма',
+      content: `Вы уверены, что хотите удалить фильм "${movie.title}"?`,
+      okText: 'Да',
+      cancelText: 'Отмена',
+      onOk: async () => {
+        try {
+          setLoading(true);
+          await MovieService.deleteMovie(movie._id);
+          const response = await MovieService.getAll('', currentPage);
+          if (currentPage > response.data.totalPages) {
+            setCurrentPage(response.data.totalPages);
+          } else {
+            setMovies(response.data.movies);
+            setTotalPages(response.data.totalPages);
+          }
+        } catch (error) {
+          console.error('Error deleting movie:', error);
+        } finally {
+          setLoading(false);
+        }
+      },
+    });
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      handlePageChange(currentPage - 1);
+    }
+  };
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages!) {
+      handlePageChange(currentPage + 1);
+    }
   };
 
   return (
-    <Table columns={columns} dataSource={tableData} pagination={paginationConfig} />
+    <>
+      <Table dataSource={movies} columns={columns} pagination={false} rowKey="_id" loading={loading} />
+      <div style={{ marginTop: '16px', textAlign: 'center' }}>
+        <Button onClick={handlePrevPage} disabled={currentPage === 1}>
+          Предыдущая страница
+        </Button>
+        <span style={{ margin: '0 8px' }}>{`Страница ${currentPage} из ${totalPages !== undefined ? totalPages : '-'}`}</span>
+        <Button onClick={handleNextPage} disabled={currentPage === totalPages}>
+          Следующая страница
+        </Button>
+      </div>
+    </>
   );
 };
 
-export default TestTable;
+export default MovieTable;
