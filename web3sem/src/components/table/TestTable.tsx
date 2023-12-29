@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Button, Modal } from 'antd';
-import { MovieService } from '../services/movies.service';
-import { IMovie, IGenre } from '../shared/types/movie.types';
+import { MovieService } from '../../services/movies.service';
+import { IMovie, IGenre } from '../../shared/types/movie.types';
 
 interface MovieTableProps {}
 
