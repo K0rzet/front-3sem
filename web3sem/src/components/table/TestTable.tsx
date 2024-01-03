@@ -1,9 +1,58 @@
-import React, { useEffect, useState } from 'react';
-import { Table, Button, Modal } from 'antd';
-import { MovieService } from '../../services/movies.service';
-import { IMovie, IGenre } from '../../shared/types/movie.types';
+import React, { useEffect, useState } from "react";
+import { Table, Button, Modal } from "antd";
+import { MovieService } from "../../services/movies.service";
+import { IMovie, IGenre } from "../../shared/types/movie.types";
+import styled from "styled-components";
 
 interface MovieTableProps {}
+
+const StyledButton = styled(Button)`
+  &.ant-btn-default {
+    background-color: rgba(255, 255, 255, 0);
+    color: inherit;
+    border: inherit 1px solid;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+`
+
+const StyledTable: typeof Table = styled(Table)`
+  .ant-table-cell {
+    color: inherit;
+    background-color: inherit !important;
+    border-color: inherit !important;
+  }
+  .ant-table-row {
+    color: inherit;
+    background-color: inherit !important;
+    border-color: inherit !important;
+  }
+  .ant-table-wrapper {
+    color: inherit;
+    background-color: inherit;
+    border-color: inherit;
+  }
+  .ant-table {
+    color: inherit;
+    background-color: inherit;
+    border-color: inherit;
+  }
+  .ant-table-container {
+    color: inherit;
+    background-color: inherit;
+    border-color: inherit;
+  }
+  .ant-table-thead {
+    color: inherit;
+    background-color: inherit;
+    border-color: inherit;
+  }
+  .ant-btn {
+    color: inherit;
+    background-color: inherit;
+    border-color: inherit;
+  }
+`;
 
 const MovieTable: React.FC<MovieTableProps> = () => {
   const [movies, setMovies] = useState<IMovie[]>([]);
@@ -13,24 +62,25 @@ const MovieTable: React.FC<MovieTableProps> = () => {
 
   const columns = [
     {
-      title: 'Title',
-      dataIndex: 'title',
-      key: 'title',
+      title: "Title",
+      dataIndex: "title",
+      key: "title",
     },
     {
-      title: 'Year',
-      dataIndex: 'year',
-      key: 'year',
+      title: "Year",
+      dataIndex: "year",
+      key: "year",
     },
     {
-      title: 'Genres',
-      dataIndex: 'genres',
-      key: 'genres',
-      render: (genres: IGenre[]) => genres.map(genre => genre.name).join(', '),
+      title: "Genres",
+      dataIndex: "genres",
+      key: "genres",
+      render: (genres: IGenre[]) =>
+        genres.map((genre) => genre.name).join(", "),
     },
     {
-      title: 'Actions',
-      key: 'actions',
+      title: "Actions",
+      key: "actions",
       render: (text: string, record: IMovie) => (
         <Button onClick={() => handleDeleteMovie(record)} danger>
           Удалить
@@ -43,7 +93,7 @@ const MovieTable: React.FC<MovieTableProps> = () => {
     const fetchMovies = async () => {
       try {
         setLoading(true);
-        const response = await MovieService.getAll('', currentPage);
+        const response = await MovieService.getAll("", currentPage);
         if (currentPage > response.data.totalPages) {
           setCurrentPage(response.data.totalPages);
         } else {
@@ -51,7 +101,7 @@ const MovieTable: React.FC<MovieTableProps> = () => {
           setTotalPages(response.data.totalPages);
         }
       } catch (error) {
-        console.error('Error fetching movies:', error);
+        console.error("Error fetching movies:", error);
       } finally {
         setLoading(false);
       }
@@ -66,15 +116,15 @@ const MovieTable: React.FC<MovieTableProps> = () => {
 
   const handleDeleteMovie = async (movie: IMovie) => {
     Modal.confirm({
-      title: 'Удаление фильма',
+      title: "Удаление фильма",
       content: `Вы уверены, что хотите удалить фильм "${movie.title}"?`,
-      okText: 'Да',
-      cancelText: 'Отмена',
+      okText: "Да",
+      cancelText: "Отмена",
       onOk: async () => {
         try {
           setLoading(true);
           await MovieService.deleteMovie(movie._id);
-          const response = await MovieService.getAll('', currentPage);
+          const response = await MovieService.getAll("", currentPage);
           if (currentPage > response.data.totalPages) {
             setCurrentPage(response.data.totalPages);
           } else {
@@ -82,7 +132,7 @@ const MovieTable: React.FC<MovieTableProps> = () => {
             setTotalPages(response.data.totalPages);
           }
         } catch (error) {
-          console.error('Error deleting movie:', error);
+          console.error("Error deleting movie:", error);
         } finally {
           setLoading(false);
         }
@@ -104,15 +154,23 @@ const MovieTable: React.FC<MovieTableProps> = () => {
 
   return (
     <>
-      <Table dataSource={movies} columns={columns} pagination={false} rowKey="_id" loading={loading} />
-      <div style={{ marginTop: '16px', textAlign: 'center' }}>
-        <Button onClick={handlePrevPage} disabled={currentPage === 1}>
+      <StyledTable
+        dataSource={movies}
+        columns={columns}
+        pagination={false}
+        rowKey="_id"
+        loading={loading}
+      />
+      <div style={{ marginTop: "16px", textAlign: "center" }}>
+        <StyledButton onClick={handlePrevPage} disabled={currentPage === 1}>
           Предыдущая страница
-        </Button>
-        <span style={{ margin: '0 8px' }}>{`Страница ${currentPage} из ${totalPages !== undefined ? totalPages : '-'}`}</span>
-        <Button onClick={handleNextPage} disabled={currentPage === totalPages}>
+        </StyledButton>
+        <span style={{ margin: "0 8px" }}>{`Страница ${currentPage} из ${
+          totalPages !== undefined ? totalPages : "-"
+        }`}</span>
+        <StyledButton onClick={handleNextPage} disabled={currentPage === totalPages}>
           Следующая страница
-        </Button>
+        </StyledButton>
       </div>
     </>
   );
