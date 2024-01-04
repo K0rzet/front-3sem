@@ -4,7 +4,7 @@ import { FooterContainer } from './footer-styles';
 
 const Footer: React.FC = () => {
   return (
-    <FooterContainer className="footer-container">
+    <FooterContainer>
       <p>221-322 Буторин Илья</p>
     </FooterContainer>
   );

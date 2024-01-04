@@ -15,6 +15,8 @@ export const GlobalStyles = createGlobalStyle`
     --color-scheme: light dark;
     --text-color-light: rgba(0, 0, 0, 0.87);
     --text-color-dark: rgba(255, 255, 255, 0.87);
+    --btn-bg-color-dark: #bb8f8f;
+    --btn-bg-color-light: #513d3d;
     --background-color-light: #ffffff;
     --background-color-dark: #242424;
 
@@ -44,6 +46,12 @@ export const GlobalStyles = createGlobalStyle`
       background-color: var(--background-color-light);
       color: var(--text-color-light);
     }
+    .ant-btn:not(:disabled):not(.ant-btn-disabled):hover {
+    color: var(--text-color-dark);
+    border-color: inherit;
+    background-color: var(--btn-bg-color-light);
+  }
+
   }
 
   [data-theme="dark"] {
@@ -51,6 +59,10 @@ export const GlobalStyles = createGlobalStyle`
       background-color: var(--background-color-dark);
       color: var(--text-color-dark);
     }
+    .ant-btn:not(:disabled):not(.ant-btn-disabled):hover {
+    border-color: inherit;
+    background-color: var(--btn-bg-color-dark);
+  }
   }
 
   a:visited {

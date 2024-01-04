@@ -4,22 +4,13 @@ import { MovieService } from "../../services/movies.service";
 import { IMovie, IGenre } from "../../shared/types/movie.types";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
+import { StyledButton } from "../../ui/AntdStyledButton";
 
 interface MovieTableProps {}
 
-const StyledButton = styled(Button)`
-  &.ant-btn-default {
-    background-color: rgba(255, 255, 255, 0);
-    color: inherit;
-    border: inherit 1px solid;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-`;
-
 const StyledTable: typeof Table = styled(Table)`
   .ant-table-cell {
-    color: inherit;
+    color: inherit !important;
     background-color: inherit !important;
     border-color: inherit !important;
   }
@@ -88,9 +79,9 @@ const MovieTable: React.FC<MovieTableProps> = () => {
           <StyledButton onClick={() => handleEditMovie(record)}>
             Изменить
           </StyledButton>
-          <Button onClick={() => handleDeleteMovie(record)} danger>
+          <StyledButton onClick={() => handleDeleteMovie(record)} danger>
             Удалить
-          </Button>
+          </StyledButton>
         </Button.Group>
       ),
     },
