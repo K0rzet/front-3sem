@@ -3,6 +3,7 @@ import { Table, Button, Modal } from "antd";
 import { MovieService } from "../../services/movies.service";
 import { IMovie, IGenre } from "../../shared/types/movie.types";
 import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
 
 interface MovieTableProps {}
 
@@ -14,7 +15,7 @@ const StyledButton = styled(Button)`
     border-radius: 5px;
     cursor: pointer;
   }
-`
+`;
 
 const StyledTable: typeof Table = styled(Table)`
   .ant-table-cell {
@@ -55,6 +56,7 @@ const StyledTable: typeof Table = styled(Table)`
 `;
 
 const MovieTable: React.FC<MovieTableProps> = () => {
+  const navigate = useNavigate();
   const [movies, setMovies] = useState<IMovie[]>([]);
   const [totalPages, setTotalPages] = useState<number | undefined>(undefined);
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -82,9 +84,14 @@ const MovieTable: React.FC<MovieTableProps> = () => {
       title: "Actions",
       key: "actions",
       render: (text: string, record: IMovie) => (
-        <Button onClick={() => handleDeleteMovie(record)} danger>
-          Удалить
-        </Button>
+        <Button.Group>
+          <StyledButton onClick={() => handleEditMovie(record)}>
+            Изменить
+          </StyledButton>
+          <Button onClick={() => handleDeleteMovie(record)} danger>
+            Удалить
+          </Button>
+        </Button.Group>
       ),
     },
   ];
@@ -140,6 +147,10 @@ const MovieTable: React.FC<MovieTableProps> = () => {
     });
   };
 
+  const handleEditMovie = (movie: IMovie) => {
+    navigate(`/movies/edit/${movie._id}`);
+  };
+
   const handlePrevPage = () => {
     if (currentPage > 1) {
       handlePageChange(currentPage - 1);
@@ -168,7 +179,10 @@ const MovieTable: React.FC<MovieTableProps> = () => {
         <span style={{ margin: "0 8px" }}>{`Страница ${currentPage} из ${
           totalPages !== undefined ? totalPages : "-"
         }`}</span>
-        <StyledButton onClick={handleNextPage} disabled={currentPage === totalPages}>
+        <StyledButton
+          onClick={handleNextPage}
+          disabled={currentPage === totalPages}
+        >
           Следующая страница
         </StyledButton>
       </div>
