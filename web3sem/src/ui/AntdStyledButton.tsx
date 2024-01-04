@@ -16,6 +16,7 @@ export const StyledButton = styled(Button)`
   }
   &:not(:disabled):not(.ant-btn-disabled):hover {
     color: inherit;
+    background-color: var(--btn-bg-color);
     border-color: inherit;
   }
 `;
