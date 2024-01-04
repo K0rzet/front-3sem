@@ -8,6 +8,7 @@ import { StyledButton } from "../../ui/AntdStyledButton";
 
 interface MovieTableProps {}
 
+
 const StyledTable: typeof Table = styled(Table)`
   .ant-table-cell {
     color: inherit !important;
