@@ -15,14 +15,17 @@ export const GlobalStyles = createGlobalStyle`
     --color-scheme: light dark;
     --text-color-light: rgba(0, 0, 0, 0.87);
     --text-color-dark: rgba(255, 255, 255, 0.87);
+    --btn-bg-color-light: #513d3d;
     --background-color-light: #ffffff;
     --background-color-dark: #242424;
-
+    
     --font-synthesis: none;
     --text-rendering: optimizeLegibility;
     --webkit-font-smoothing: antialiased;
     --moz-osx-font-smoothing: grayscale;
   }
+  
+  
 
   body {
     margin: 0;
@@ -41,12 +44,14 @@ export const GlobalStyles = createGlobalStyle`
 
   [data-theme="light"] {
     body {
+      --btn-bg-color: #513d3d;
       background-color: var(--background-color-light);
       color: var(--text-color-light);
     }
   }
-
+  
   [data-theme="dark"] {
+    --btn-bg-color: #bb8f8f;
     body {
       background-color: var(--background-color-dark);
       color: var(--text-color-dark);
