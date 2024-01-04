@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from "axios"
-import { getMoviesUrl } from "../configs/urls.config"
-import { IMovieResponse } from "../shared/types/movie.types"
+import { API_URL, getMoviesUrl } from "../configs/urls.config"
+import { IMovieEdit, IMovieResponse } from "../shared/types/movie.types"
 
 export const MovieService = {
 	async getAll(
@@ -22,3 +22,13 @@ export const MovieService = {
 	},
 
 }
+
+export const getMovieById = async (id: string) => {
+	const response = await axios.get(`${API_URL}/movies/${id}`);
+	return response.data;
+  };
+  
+  export const updateMovie = async (id: string, newData: IMovieEdit) => {
+	const response = await axios.put(`${API_URL}/movies/${id}`, newData);
+	return response.data;
+  };

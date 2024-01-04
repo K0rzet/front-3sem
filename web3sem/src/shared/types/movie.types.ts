@@ -37,6 +37,11 @@ export interface IMovie {
     totalPages: number
 }
 
+export interface IMovieEdit {
+	title: string
+	year: number
+}
+
 export interface IMovieResponse {
     movies: IMovie[];
     totalCount: number;
