@@ -6,9 +6,11 @@ import { useEffect } from "react";
 
 function App() {
   useEffect(() => {
-    const isSystemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const initialTheme = isSystemDark ? 'dark' : 'light';
-    document.documentElement.setAttribute('data-theme', initialTheme);
+    const isSystemDark = window.matchMedia(
+      "(prefers-color-scheme: dark)"
+    ).matches;
+    const initialTheme = isSystemDark ? "dark" : "light";
+    document.documentElement.setAttribute("data-theme", initialTheme);
   }, []);
   return (
     <Router>
