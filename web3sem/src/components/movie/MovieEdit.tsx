@@ -4,51 +4,8 @@ import { IMovieEdit } from "../../shared/types/movie.types";
 import { getMovieById, updateMovie } from "../../services/movies.service";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import styled from "styled-components";
+import { ErrorContainer, ErrorMessage, Form, Input, Label, SubmitButton } from "../../ui/StyledForm";
 
-const Form = styled.form`
-  max-width: 400px;
-  margin: auto;
-`;
-
-const Label = styled.label`
-  display: block;
-  margin-bottom: 15px;
-`;
-
-const Input = styled.input`
-  width: 100%;
-  padding: 8px;
-  margin-top: 5px;
-`;
-
-const ErrorMessage = styled.span`
-  color: red;
-  font-size: 12px;
-  margin-top: 5px;
-  display: block;
-`;
-
-const SubmitButton = styled.button`
-  background-color: #4caf50;
-  color: white;
-  padding: 10px;
-  border: none;
-  cursor: pointer;
-  width: 100%;
-  font-size: 16px;
-  margin-top: 10px;
-
-  &:disabled {
-    background-color: #dddddd;
-    cursor: not-allowed;
-  }
-`;
-
-const ErrorContainer = styled.div`
-  color: red;
-  margin-top: 10px;
-`;
 
 const MovieEdit: React.FC = () => {
   const navigate = useNavigate();
@@ -59,7 +16,7 @@ const MovieEdit: React.FC = () => {
     criteriaMode: "firstError",
   });
   const [error, setError] = useState<string | null>(null);
-
+  
   useEffect(() => {
     const fetchMovieData = async () => {
       try {
