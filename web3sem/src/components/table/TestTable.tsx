@@ -5,7 +5,9 @@ import { IMovie, IGenre } from "../../shared/types/movie.types";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { StyledButton } from "../../ui/AntdStyledButton";
+import { useInView } from "react-intersection-observer";
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface MovieTableProps {}
 
 const StyledTable: typeof Table = styled(Table)`
@@ -52,6 +54,10 @@ const MovieTable: React.FC<MovieTableProps> = () => {
   const [totalPages, setTotalPages] = useState<number | undefined>(undefined);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [loading, setLoading] = useState<boolean>(false);
+  const [paginationType, setPaginationType] = useState<"normal" | "dynamic">("normal");
+  const [showMoreButton, setShowMoreButton] = useState<boolean>(false);
+
+  const { ref, inView } = useInView();
 
   const columns = [
     {
@@ -68,18 +74,26 @@ const MovieTable: React.FC<MovieTableProps> = () => {
       title: "Genres",
       dataIndex: "genres",
       key: "genres",
-      render: (genres: IGenre[]) =>
-        genres.map((genre) => genre.name).join(", "),
+      render: (genres: IGenre[]) => genres.map((genre) => genre.name).join(", "),
     },
     {
       title: "Actions",
       key: "actions",
-      render: (text: string, record: IMovie) => (
+      render: (_text: string, record: IMovie) => (
         <Button.Group>
-          <StyledButton onClick={() => handleEditMovie(record)}>
+          <StyledButton
+            onClick={() => {
+              handleEditMovie(record);
+            }}
+          >
             Изменить
           </StyledButton>
-          <StyledButton onClick={() => handleDeleteMovie(record)} danger>
+          <StyledButton
+            onClick={async () => {
+              await handleDeleteMovie(record);
+            }}
+            danger
+          >
             Удалить
           </StyledButton>
         </Button.Group>
@@ -95,8 +109,13 @@ const MovieTable: React.FC<MovieTableProps> = () => {
         if (currentPage > response.data.totalPages) {
           setCurrentPage(response.data.totalPages);
         } else {
-          setMovies(response.data.movies);
+          paginationType === "dynamic"
+            ? setMovies((prevMovies) => [...prevMovies, ...response.data.movies])
+            : setMovies(response.data.movies);
+
           setTotalPages(response.data.totalPages);
+
+          setShowMoreButton(currentPage < response.data.totalPages);
         }
       } catch (error) {
         console.error("Error fetching movies:", error);
@@ -107,6 +126,11 @@ const MovieTable: React.FC<MovieTableProps> = () => {
 
     fetchMovies();
   }, [currentPage]);
+  useEffect(() => {
+    if (paginationType === "dynamic" && inView && currentPage < totalPages!) {
+      handlePageChange(currentPage + 1);
+    }
+  }, [inView]);
 
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage);
@@ -153,29 +177,50 @@ const MovieTable: React.FC<MovieTableProps> = () => {
       handlePageChange(currentPage + 1);
     }
   };
+  const handleShowMore = () => {
+    handlePageChange(currentPage + 1);
+  };
 
   return (
     <>
-      <StyledTable
-        dataSource={movies}
-        columns={columns}
-        pagination={false}
-        rowKey="_id"
-        loading={loading}
-      />
+      <StyledTable dataSource={movies} columns={columns} pagination={false} rowKey="_id" loading={loading} />
       <div style={{ marginTop: "16px", textAlign: "center" }}>
-        <StyledButton onClick={handlePrevPage} disabled={currentPage === 1}>
-          Предыдущая страница
-        </StyledButton>
-        <span style={{ margin: "0 8px" }}>{`Страница ${currentPage} из ${
-          totalPages !== undefined ? totalPages : "-"
-        }`}</span>
+        {/* Выбор типа пагинации */}
         <StyledButton
-          onClick={handleNextPage}
-          disabled={currentPage === totalPages}
+          onClick={() => {
+            setPaginationType("normal");
+          }}
+          disabled={paginationType === "normal"}
         >
-          Следующая страница
+          Обычная пагинация
         </StyledButton>
+        <StyledButton
+          onClick={() => {
+            setPaginationType("dynamic");
+          }}
+          disabled={paginationType === "dynamic"}
+        >
+          Динамическая пагинация
+        </StyledButton>
+
+        {paginationType === "normal" ? (
+          /* Обычная пагинация */
+          <>
+            <StyledButton onClick={handlePrevPage} disabled={currentPage === 1}>
+              Предыдущая страница
+            </StyledButton>
+            <span style={{ margin: "0 8px" }}>{`Страница ${currentPage} из ${totalPages ?? "-"}`}</span>
+            <StyledButton onClick={handleNextPage} disabled={currentPage === totalPages}>
+              Следующая страница
+            </StyledButton>
+          </>
+        ) : (
+          /* Динамическая пагинация */
+          <>
+            {showMoreButton && <StyledButton onClick={handleShowMore}>Показать еще</StyledButton>}
+            <div ref={ref}>abobus</div>
+          </>
+        )}
       </div>
     </>
   );

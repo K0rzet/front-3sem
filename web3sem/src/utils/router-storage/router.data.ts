@@ -7,9 +7,7 @@ import { ABOUT_URL, AUTH_URL, GENERATE_PDF_URL, HOME_URL, MOVIE_EDIT_URL, TABLE_
 import MovieEdit from "../../components/movie/MovieEdit";
 import GeneratePdf from "../../components/GeneratePdf/GeneratePdf";
 
-const Home = React.lazy(() => import("../../components/Home/Home"));
-
-
+const Home = React.lazy(async () => await import("../../components/Home/Home"));
 
 export const routerData: IRouter = {
   items: [
