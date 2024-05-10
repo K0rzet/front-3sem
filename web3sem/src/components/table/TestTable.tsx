@@ -9,7 +9,7 @@ import { useInView } from "react-intersection-observer";
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface MovieTableProps {}
-
+type TPagination = "normal" | "dynamic";
 const StyledTable: typeof Table = styled(Table)`
   .ant-table-cell {
     color: inherit !important;
@@ -52,10 +52,10 @@ const MovieTable: React.FC<MovieTableProps> = () => {
   const navigate = useNavigate();
   const [movies, setMovies] = useState<IMovie[]>([]);
   const [totalPages, setTotalPages] = useState<number | undefined>(undefined);
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [paginationType, setPaginationType] = useState<"normal" | "dynamic">("normal");
-  const [showMoreButton, setShowMoreButton] = useState<boolean>(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [paginationType, setPaginationType] = useState<TPagination>("normal");
+  const [showMoreButton, setShowMoreButton] = useState(false);
 
   const { ref, inView } = useInView();
 

@@ -1,15 +1,15 @@
-import React, { PropsWithChildren } from 'react'
-import Footer from './footer/Footer'
-import Header from './header/Header'
+import React, { PropsWithChildren } from "react";
+import Footer from "./footer/Footer";
+import Header from "./header/Header";
 
-const Layout: React.FC<PropsWithChildren> = ( {children} ) => {
+const Layout: React.FC<PropsWithChildren> = ({ children }) => {
   return (
     <div>
-        <Header />
-        {children}
-        <Footer />
+      <Header />
+      {children}
+      <Footer />
     </div>
-  )
-}
+  );
+};
 
-export default Layout
+export default Layout;

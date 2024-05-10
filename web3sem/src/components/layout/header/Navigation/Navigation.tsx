@@ -11,7 +11,7 @@ const StyledLink = styled(Link)`
   &:hover {
     color: #c6c6c6;
   }
-`
+`;
 
 const Navigation: React.FC = () => {
   return (
