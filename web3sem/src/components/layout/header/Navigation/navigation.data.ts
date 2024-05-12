@@ -1,4 +1,10 @@
-import { ABOUT_URL, AUTH_URL, GENERATE_PDF_URL, HOME_URL, TABLE_URL } from "../../../../utils/router-storage/router-constants";
+import {
+  ABOUT_URL,
+  AUTH_URL,
+  GENERATE_PDF_URL,
+  HOME_URL,
+  TABLE_URL,
+} from "../../../../utils/router-storage/router-constants";
 import { INavigation } from "./navigation.interface";
 
 export const navigationData: INavigation = {
@@ -14,10 +20,6 @@ export const navigationData: INavigation = {
     {
       link: ABOUT_URL,
       name: "About Us",
-    },
-    {
-      link: AUTH_URL,
-      name: "Register",
     },
     {
       link: AUTH_URL,

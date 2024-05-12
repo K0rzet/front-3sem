@@ -2,6 +2,7 @@
 import { cleanup, render } from "@testing-library/react";
 import { afterEach } from "vitest";
 import "@testing-library/jest-dom";
+import { AuthProvider } from "../src/contexts/AuthContext";
 
 afterEach(() => {
   cleanup();
@@ -9,7 +10,7 @@ afterEach(() => {
 function customRender(ui: React.ReactElement, options = {}) {
   return render(ui, {
     // wrap provider(s) here if needed
-    wrapper: ({ children }) => children,
+    wrapper: ({ children }) => <AuthProvider>{children}</AuthProvider>,
     ...options,
   });
 }

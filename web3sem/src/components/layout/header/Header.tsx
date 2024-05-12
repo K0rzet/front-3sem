@@ -28,7 +28,9 @@ const Header: React.FC = () => {
   return (
     <HeaderContainer width="1280px">
       <Navigation />
-      <StyledButton onClick={handleAuthClick}>{isAuthenticated ? "Выйти" : "Войти"}</StyledButton>
+      <StyledButton data-testid="auth" onClick={handleAuthClick}>
+        {isAuthenticated ? "Выйти" : "Войти"}
+      </StyledButton>
       <StyledButton onClick={changeTheme}>{currentTheme === "dark" ? "Светлая тема" : "Темная тема"}</StyledButton>
     </HeaderContainer>
   );

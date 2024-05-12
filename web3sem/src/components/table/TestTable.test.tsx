@@ -1,112 +1,82 @@
-import React from "react"; // Ensure React is imported
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { describe, vi } from "vitest";
+import { fireEvent, render, screen, waitFor } from "../../../tests/setup.tsx";
+import MovieTable from "./TestTable.tsx";
 import { BrowserRouter } from "react-router-dom";
-import MovieTable from "./TestTable";
-import { MovieService } from "../../services/movies.service";
-
-// Correctly mock modules
-vi.mock("react-router-dom", async (importOriginal) => {
-  const actual = await importOriginal();
+window.matchMedia = vi.fn().mockImplementation((query) => {
   return {
-    ...actual,
-    useNavigate: vi.fn(),
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: vi.fn(),
+    removeListener: vi.fn(),
   };
 });
-window.matchMedia =
-  window.matchMedia ||
-  function () {
-    return {
-      matches: false,
-      addListener: function () {},
-      removeListener: function () {},
-    };
-  };
-
 vi.mock("react-intersection-observer", () => ({
-  useInView: () => ({
-    ref: vi.fn(),
-    inView: true,
-  }),
+  useInView: vi.fn().mockReturnValue({ ref: {}, inView: true }),
 }));
-
-// Ensure React and its hooks are correctly handled
-vi.mock("react", async () => {
-  const originalReact = await vi.importActual("react");
-  return {
-    ...originalReact,
-    useState: vi.fn().mockImplementation((init) => {
-      let value = init;
-      const setState = (newValue) => {
-        value = typeof newValue === "function" ? newValue(value) : newValue;
-        return value;
-      };
-      return [value, setState];
-    }),
-  };
-});
-
-vi.mock("../../services/movies.service");
-
-describe("MovieTable Component", () => {
-  const setMovies = vi.fn();
-  const setLoading = vi.fn();
-  const setCurrentPage = vi.fn();
-  const setTotalPages = vi.fn();
-  const setShowMoreButton = vi.fn();
-
-  beforeEach(() => {
-    vi.clearAllMocks();
-
-    vi.mocked(MovieService.getAll).mockResolvedValue({
-      data: { movies: [{ _id: "1", title: "Movie 1", year: 2021, genres: [{ name: "Action" }] }], totalPages: 3 },
-    });
-
-    vi.mocked(setMovies).mockImplementation((callback) => callback);
-    vi.mocked(setLoading).mockImplementation((callback) => callback);
-    vi.mocked(setCurrentPage).mockImplementation((callback) => callback);
-    vi.mocked(setTotalPages).mockImplementation((callback) => callback);
-    vi.mocked(setShowMoreButton).mockImplementation((callback) => callback);
-
-    vi.mocked(MovieService.deleteMovie).mockResolvedValue({});
-  });
-
-  it("should render movies correctly", async () => {
+describe("TestTable", () => {
+  test("Отображает таблицу", () => {
     render(
       <BrowserRouter>
         <MovieTable />
       </BrowserRouter>,
     );
-
-    const movieTitles = await screen.findAllByText(/Movie 1/i);
-    expect(movieTitles).toHaveLength(1);
-    expect(screen.getByText("Movie 1")).toBeInTheDocument();
+    const title = screen.getByText("Title");
+    expect(title).toBeInTheDocument();
+    const year = screen.getByText("Year");
+    expect(year).toBeInTheDocument();
+    const genres = screen.getByText("Genres");
+    expect(genres).toBeInTheDocument();
+    const actions = screen.getByText("Actions");
+    expect(actions).toBeInTheDocument();
+    const table = screen.getByTestId("table");
+    expect(table).toBeInTheDocument();
   });
-
-  it("handles pagination correctly", async () => {
+  test("Получение данных с сервера", async () => {
     render(
       <BrowserRouter>
         <MovieTable />
       </BrowserRouter>,
     );
-
-    const nextPageButton = screen.getByText("Следующая страница");
-    fireEvent.click(nextPageButton);
-
-    expect(MovieService.getAll).toHaveBeenCalledWith("", 2);
+    await waitFor(
+      () => {
+        const firstData = screen.getByText("dfgdfgfd");
+        expect(firstData).toBeInTheDocument();
+      },
+      { timeout: 5000 },
+    );
   });
-
-  it("deletes a movie correctly", async () => {
+  test("Смена типа пагинации", async () => {
     render(
       <BrowserRouter>
         <MovieTable />
       </BrowserRouter>,
     );
-
-    const deleteButtons = await screen.findAllByText("Удалить");
-    fireEvent.click(deleteButtons[0]);
-    fireEvent.click(await screen.findByText("Да"));
-
-    expect(MovieService.deleteMovie).toHaveBeenCalledWith("1");
+    const dynamicButton = screen.getByText("Динамическая пагинация");
+    fireEvent.click(dynamicButton);
+    await waitFor(
+      () => {
+        const moreButton = screen.getByText("Показать еще");
+        expect(moreButton).toBeInTheDocument();
+      },
+      { timeout: 5000 },
+    );
+  });
+  test("Пагинация", async () => {
+    render(
+      <BrowserRouter>
+        <MovieTable />
+      </BrowserRouter>,
+    );
+    const forwardButton = screen.getByTestId("forward-button");
+    console.log(forwardButton);
+    fireEvent.click(forwardButton);
+    await waitFor(
+      () => {
+        const pageNumber = screen.getByText("Страница 2 из 20");
+        expect(pageNumber).toBeInTheDocument();
+      },
+      { timeout: 5000 },
+    );
   });
 });

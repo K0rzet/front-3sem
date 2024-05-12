@@ -4,15 +4,7 @@ import { useForm } from "react-hook-form";
 import { ErrorMessage, Form, Input, Label, SubmitButton } from "../../ui/StyledForm";
 import { Page, Text, View, Document, StyleSheet, PDFDownloadLink, Image } from "@react-pdf/renderer";
 
-const PDFDownloadLinkAny: any = PDFDownloadLink;
-const TextAny: any = Text;
-const ViewAny: any = View;
-const DocumentAny: any = Document;
-const StyleSheetAny: any = StyleSheet;
-const PageAny: any = Page;
-const ImageAny: any = Image;
-
-const styles = StyleSheetAny.create({
+const styles = StyleSheet.create({
   page: {
     flexDirection: "column",
     alignItems: "center",
@@ -36,14 +28,14 @@ interface IDownloadForm {
 }
 
 const MyDocument = ({ data, bigPosterUrl }: { data: IDownloadForm; bigPosterUrl: string }) => (
-  <DocumentAny>
-    <PageAny size="A4" style={styles.page}>
-      <ViewAny style={styles.section}>
-        <TextAny>{data.title}</TextAny>
-      </ViewAny>
-      <ViewAny style={styles.section}>{bigPosterUrl && <ImageAny src={bigPosterUrl} style={styles.image} />}</ViewAny>
-    </PageAny>
-  </DocumentAny>
+  <Document>
+    <Page size="A4" style={styles.page}>
+      <View style={styles.section}>
+        <Text>{data.title}</Text>
+      </View>
+      <View style={styles.section}>{bigPosterUrl && <Image src={bigPosterUrl} style={styles.image} />}</View>
+    </Page>
+  </Document>
 );
 
 const GeneratePdf: React.FC = () => {
@@ -111,13 +103,13 @@ const GeneratePdf: React.FC = () => {
       </Form>
 
       {task && bigPosterUrl && (
-        <PDFDownloadLinkAny
+        <PDFDownloadLink
           data-testid="download-pdf"
           document={<MyDocument data={task} bigPosterUrl={bigPosterUrl} />}
           fileName="form_data.pdf"
         >
           Скачать PDF
-        </PDFDownloadLinkAny>
+        </PDFDownloadLink>
       )}
     </div>
   );

@@ -4,8 +4,8 @@ import { MovieService } from "../../services/movies.service";
 import { IMovie, IGenre } from "../../shared/types/movie.types";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
-import { StyledButton } from "../../ui/AntdStyledButton";
 import { useInView } from "react-intersection-observer";
+import { StyledButton } from "../../ui/AntdStyledButton";
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface MovieTableProps {}
@@ -92,7 +92,6 @@ const MovieTable: React.FC<MovieTableProps> = () => {
             onClick={async () => {
               await handleDeleteMovie(record);
             }}
-            danger
           >
             Удалить
           </StyledButton>
@@ -128,13 +127,9 @@ const MovieTable: React.FC<MovieTableProps> = () => {
   }, [currentPage]);
   useEffect(() => {
     if (paginationType === "dynamic" && inView && currentPage < totalPages!) {
-      handlePageChange(currentPage + 1);
+      setCurrentPage(currentPage + 1);
     }
   }, [inView]);
-
-  const handlePageChange = (newPage: number) => {
-    setCurrentPage(newPage);
-  };
 
   const handleDeleteMovie = async (movie: IMovie) => {
     Modal.confirm({
@@ -168,22 +163,27 @@ const MovieTable: React.FC<MovieTableProps> = () => {
 
   const handlePrevPage = () => {
     if (currentPage > 1) {
-      handlePageChange(currentPage - 1);
+      setCurrentPage(currentPage - 1);
     }
   };
 
   const handleNextPage = () => {
-    if (currentPage < totalPages!) {
-      handlePageChange(currentPage + 1);
-    }
+    setCurrentPage(currentPage + 1);
   };
   const handleShowMore = () => {
-    handlePageChange(currentPage + 1);
+    setCurrentPage(currentPage + 1);
   };
 
   return (
     <>
-      <StyledTable dataSource={movies} columns={columns} pagination={false} rowKey="_id" loading={loading} />
+      <StyledTable
+        data-testid="table"
+        dataSource={movies}
+        columns={columns}
+        pagination={false}
+        rowKey="_id"
+        loading={loading}
+      />
       <div style={{ marginTop: "16px", textAlign: "center" }}>
         {/* Выбор типа пагинации */}
         <StyledButton
@@ -210,7 +210,13 @@ const MovieTable: React.FC<MovieTableProps> = () => {
               Предыдущая страница
             </StyledButton>
             <span style={{ margin: "0 8px" }}>{`Страница ${currentPage} из ${totalPages ?? "-"}`}</span>
-            <StyledButton onClick={handleNextPage} disabled={currentPage === totalPages}>
+            <StyledButton
+              onClick={() => {
+                handleNextPage();
+              }}
+              disabled={currentPage === totalPages}
+              data-testid="forward-button"
+            >
               Следующая страница
             </StyledButton>
           </>
@@ -218,7 +224,7 @@ const MovieTable: React.FC<MovieTableProps> = () => {
           /* Динамическая пагинация */
           <>
             {showMoreButton && <StyledButton onClick={handleShowMore}>Показать еще</StyledButton>}
-            <div ref={ref}>abobus</div>
+            <div ref={ref}>.</div>
           </>
         )}
       </div>
