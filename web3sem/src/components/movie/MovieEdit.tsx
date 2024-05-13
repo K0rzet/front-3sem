@@ -2,28 +2,30 @@ import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { IMovieEdit } from "../../shared/types/movie.types";
 import { getMovieById, updateMovie } from "../../services/movies.service";
-import { useParams } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
-import { ErrorContainer, ErrorMessage, Form, Input, Label, SubmitButton } from "../../ui/StyledForm";
+import { useParams, useNavigate } from "react-router-dom";
 
+import { ErrorContainer, ErrorMessage, Form, Input, Label, SubmitButton } from "../../ui/StyledForm";
 
 const MovieEdit: React.FC = () => {
   const navigate = useNavigate();
-  const { id } = useParams<{ id: string }>();
+  const { id } = useParams<{ id?: string }>();
   const { register, handleSubmit, setValue, formState } = useForm<IMovieEdit>({
     mode: "onBlur",
     reValidateMode: "onChange",
     criteriaMode: "firstError",
   });
   const [error, setError] = useState<string | null>(null);
-  
+
   useEffect(() => {
     const fetchMovieData = async () => {
+      if (!id) {
+        return;
+      }
       try {
         const movieData = await getMovieById(id);
-        Object.keys(movieData).forEach((key) =>
-          setValue(key as keyof IMovieEdit, movieData[key])
-        );
+        Object.keys(movieData).forEach((key) => {
+          setValue(key as keyof IMovieEdit, movieData[key]);
+        });
       } catch (error) {
         console.error("Ошибка при загрузке данных фильма", error);
         setError("Ошибка при загрузке данных фильма");
@@ -34,6 +36,9 @@ const MovieEdit: React.FC = () => {
   }, [id, setValue]);
 
   const onSubmit = async (data: IMovieEdit) => {
+    if (!id) {
+      return;
+    }
     try {
       await updateMovie(id, data);
       navigate("/table");

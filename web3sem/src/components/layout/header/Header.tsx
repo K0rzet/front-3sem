@@ -6,15 +6,11 @@ import { StyledButton } from "../../../ui/AntdStyledButton";
 
 const Header: React.FC = () => {
   const { isAuthenticated, login, logout } = useAuth();
-  const isSystemDark = window.matchMedia(
-    "(prefers-color-scheme: dark)"
-  ).matches;
+  const isSystemDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
 
   const systemTheme = isSystemDark ? "dark" : "light";
 
-  const [currentTheme, setCurrentTheme] = useState<"dark" | "light">(
-    systemTheme
-  );
+  const [currentTheme, setCurrentTheme] = useState<"dark" | "light">(systemTheme);
   const changeTheme = () => {
     const currentMode = document.documentElement.getAttribute("data-theme");
     const newMode = currentMode === "dark" ? "light" : "dark";
@@ -32,12 +28,10 @@ const Header: React.FC = () => {
   return (
     <HeaderContainer width="1280px">
       <Navigation />
-      <StyledButton onClick={handleAuthClick}>
+      <StyledButton data-testid="auth" onClick={handleAuthClick}>
         {isAuthenticated ? "Выйти" : "Войти"}
       </StyledButton>
-      <StyledButton onClick={changeTheme}>
-        {currentTheme === "dark" ? "Светлая тема" : "Темная тема"}
-      </StyledButton>
+      <StyledButton onClick={changeTheme}>{currentTheme === "dark" ? "Светлая тема" : "Темная тема"}</StyledButton>
     </HeaderContainer>
   );
 };

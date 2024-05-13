@@ -20,8 +20,8 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
 
-    "types": ["node"],
+    "types": ["node", "jest"]
   },
-  "include": ["src"],
+  "include": ["src", ".eslintrc.cjs", "vite.config.ts", "tests", "jest.config.ts"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

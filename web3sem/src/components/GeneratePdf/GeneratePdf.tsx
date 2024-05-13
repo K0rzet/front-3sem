@@ -1,32 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import {
-  ErrorMessage,
-  Form,
-  Input,
-  Label,
-  SubmitButton,
-} from "../../ui/StyledForm";
-import {
-  Page,
-  Text,
-  View,
-  Document,
-  StyleSheet,
-  PDFDownloadLink,
-  Image,
-} from "@react-pdf/renderer";
+import { ErrorMessage, Form, Input, Label, SubmitButton } from "../../ui/StyledForm";
+import { Page, Text, View, Document, StyleSheet, PDFDownloadLink, Image } from "@react-pdf/renderer";
 
-const PDFDownloadLinkAny: any = PDFDownloadLink;
-const TextAny: any = Text;
-const ViewAny: any = View;
-const DocumentAny: any = Document;
-const StyleSheetAny: any = StyleSheet;
-const PageAny: any = Page;
-const ImageAny: any = Image;
-
-const styles = StyleSheetAny.create({
+const styles = StyleSheet.create({
   page: {
     flexDirection: "column",
     alignItems: "center",
@@ -49,28 +27,20 @@ interface IDownloadForm {
   bigPoster: File;
 }
 
-const MyDocument = ({
-  data,
-  bigPosterUrl,
-}: {
-  data: IDownloadForm;
-  bigPosterUrl: string;
-}) => (
-  <DocumentAny>
-    <PageAny size="A4" style={styles.page}>
-      <ViewAny style={styles.section}>
-        <TextAny>{data.title}</TextAny>
-      </ViewAny>
-      <ViewAny style={styles.section}>
-        {bigPosterUrl && <ImageAny src={bigPosterUrl} style={styles.image} />}
-      </ViewAny>
-    </PageAny>
-  </DocumentAny>
+const MyDocument = ({ data, bigPosterUrl }: { data: IDownloadForm; bigPosterUrl: string }) => (
+  <Document>
+    <Page size="A4" style={styles.page}>
+      <View style={styles.section}>
+        <Text>{data.title}</Text>
+      </View>
+      <View style={styles.section}>{bigPosterUrl && <Image src={bigPosterUrl} style={styles.image} />}</View>
+    </Page>
+  </Document>
 );
 
 const GeneratePdf: React.FC = () => {
   const { register, handleSubmit, formState } = useForm<IDownloadForm>({
-    mode: "onBlur",
+    mode: "onChange",
     reValidateMode: "onChange",
     criteriaMode: "firstError",
   });
@@ -108,36 +78,38 @@ const GeneratePdf: React.FC = () => {
         <Label>
           Постер:
           <Input
+            data-testid="poster"
             type="file"
             accept="image/*"
             {...register("bigPoster", {
               required: "Required",
             })}
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (file) {
-                setTask((prevTask) => ({
-                  ...prevTask!,
-                  bigPoster: file,
-                }));
-                setBigPosterUrl(URL.createObjectURL(file));
-              }
-            }}
+            // onChange={(e) => {
+            //   const file = e.target.files?.[0];
+            //   if (file) {
+            //     setTask((prevTask) => ({
+            //       ...prevTask!,
+            //       bigPoster: file,
+            //     }));
+            //     setBigPosterUrl(URL.createObjectURL(file));
+            //   }
+            // }}
           />
           <ErrorMessage>{formState.errors.bigPoster?.message}</ErrorMessage>
         </Label>
-        <SubmitButton type="submit" disabled={!formState.isValid}>
+        <SubmitButton data-testid={"save-changes"} type="submit" disabled={!formState.isValid}>
           Сохранить изменения
         </SubmitButton>
       </Form>
 
       {task && bigPosterUrl && (
-        <PDFDownloadLinkAny
+        <PDFDownloadLink
+          data-testid="download-pdf"
           document={<MyDocument data={task} bigPosterUrl={bigPosterUrl} />}
           fileName="form_data.pdf"
         >
           Скачать PDF
-        </PDFDownloadLinkAny>
+        </PDFDownloadLink>
       )}
     </div>
   );

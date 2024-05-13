@@ -19,4 +19,7 @@ export const StyledButton = styled(Button)`
     background-color: var(--btn-bg-color);
     border-color: inherit;
   }
+  &:disabled {
+    cursor: not-allowed;
+  }
 `;
